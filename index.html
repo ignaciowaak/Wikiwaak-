@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ignacio waak - Wikipedia, la enciclopedia libre</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    /* RESET BÁSICO */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: sans-serif;
+      background-color: #fff;
+      color: #202122;
+      line-height: 1.6;
+      margin: 0;
+    }
+    a {
+      color: #0645ad;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* ENCABEZADO FIJO */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #a2a9b1;
+      z-index: 999;
+    }
+
+    /* BARRA SUPERIOR (hamburguesa, logo, lupa) */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; /* logo e ícono hamburguesa a la izq. */
+      padding: 6px 10px;
+    }
+
+    /* Menú hamburguesa */
+    .hamburger {
+      cursor: pointer;
+      display: inline-block;
+      padding: 5px;
+      margin-right: 10px; /* separa el logo del menú */
+    }
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background-color: #000;
+      margin: 4px 0;
+    }
+
+    /* Logo Wikipedia (a la izquierda) */
+    .logo-container img {
+      height: 35px;
+      vertical-align: middle;
+    }
+
+    /* Contenedor de la lupa a la derecha */
+    .search-container {
+      margin-left: auto; /* empuja la lupa al extremo derecho */
+    }
+    .search-icon {
+      width: 25px;
+      height: 25px;
+      fill: #54595d;
+      cursor: pointer;
+    }
+
+    /* BARRA DE BÚSQUEDA (oculta por defecto) */
+    .search-bar {
+      display: none;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #a2a9b1;
+      padding: 5px 10px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #a2a9b1;
+      border-radius: 3px;
+    }
+
+    /* MENÚ LATERAL */
+    nav {
+      position: fixed;
+      top: 50px; /* debajo del header */
+      left: 0;
+      width: 220px;
+      height: 100%;
+      background-color: #f8f9fa;
+      border-right: 1px solid #a2a9b1;
+      padding: 10px;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 998;
+    }
+    nav.show {
+      transform: translateX(0);
+    }
+    nav h2 {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+    nav ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    nav li {
+      margin: 8px 0;
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    #content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 85px 16px 20px 16px; 
+      /* Ajustado a 85px para que el título quede más arriba */
+    }
+
+    /* TÍTULO y SUBTÍTULO (serif) */
+    #firstHeading {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-size: 22px;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 2px;
+    }
+    .subtitle {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-size: 14px;
+      color: #54595d;
+      margin-bottom: 5px;
+    }
+
+    /* LÍNEA DEBAJO DEL SUBTÍTULO */
+    .separator {
+      border: 0;
+      height: 1px;
+      background-color: #a2a9b1;
+      margin-bottom: 10px;
+    }
+
+    /* BARRA DE ACCIONES (debajo del nombre) 
+       "Traducir" a la izquierda, 
+       los otros 3 a la derecha. 
+    */
+    .action-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .action-left, .action-right {
+      display: flex;
+      align-items: center;
+    }
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      height: 36px;
+    }
+    .action-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #54595d;
+    }
+    /* Pequeño separador vertical entre íconos */
+    .action-separator {
+      width: 1px;
+      height: 20px;
+      background-color: #a2a9b1;
+      margin: 0 4px;
+    }
+
+    /* Otra línea después de la barra de acciones */
+    .toolbar-separator {
+      border: 0;
+      height: 1px;
+      background-color: #a2a9b1;
+      margin-bottom: 15px;
+    }
+
+    /* NUEVO ESTILO DE INFOBOX, COMO LA CAPTURA */
+    .infobox {
+      border: 1px solid #a2a9b1;
+      background-color: #f8f9fa;
+      float: right;
+      margin: 0 0 1em 1em;
+      font-size: 90%;
+      width: 260px; /* un poco más ancho para asemejar la captura */
+    }
+    /* Título superior (nombre de la persona) */
+    .infobox-title {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      font-family: "Georgia", "Times New Roman", serif;
+      text-align: center;
+      padding: 6px;
+      font-size: 18px;
+    }
+    /* Imagen y pie de foto */
+    .infobox-image {
+      text-align: center;
+      padding: 5px;
+    }
+    .infobox-image img {
+      max-width: 100%;
+    }
+    .infobox-caption {
+      font-size: 0.85em;
+      color: #54595d;
+      margin-top: 4px;
+    }
+    /* Encabezados de cada cargo (color) */
+    .infobox-header {
+      background-color: #B0C4DE; /* color claro, similar a la captura */
+      text-align: center;
+      font-weight: bold;
+      padding: 4px;
+    }
+    /* Etiqueta y dato */
+    .infobox-label {
+      width: 40%;
+      background-color: #eaecf0;
+      font-weight: bold;
+      vertical-align: top;
+      padding: 4px;
+    }
+    .infobox-data {
+      vertical-align: top;
+      padding: 4px;
+    }
+    /* Bloque "Datos personales" con color */
+    .infobox-section {
+      background-color: #B0C4DE;
+      text-align: center;
+      font-weight: bold;
+      padding: 4px;
+    }
+
+    /* ENCABEZADOS DE SECCIÓN */
+    h2 {
+      font-size: 1.2em;
+      border-bottom: 1px solid #a2a9b1;
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
+
+    /* REFERENCIAS */
+    ol.references {
+      font-size: 0.9em;
+      margin-top: 0.5em;
+      padding-left: 1.8em;
+    }
+    .reference {
+      margin-bottom: 0.5em;
+    }
+    sup.reference a {
+      text-decoration: none;
+    }
+
+    /* PIE DE PÁGINA */
+    footer.page-footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #54595d;
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid #a2a9b1;
+      background: #f8f9fa;
+    }
+
+    /* RESPONSIVO */
+    @media (max-width: 768px) {
+      nav {
+        width: 200px;
+      }
+      #content {
+        padding: 85px 10px 20px 10px;
+      }
+      .infobox {
+        float: none;
+        margin: 0 auto 1em auto;
+        width: 90%;
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Menú hamburguesa
+      var hamburger = document.querySelector(".hamburger");
+      var nav = document.querySelector("nav");
+      hamburger.addEventListener("click", function() {
+        nav.classList.toggle("show");
+      });
+
+      // Búsqueda oculta (lupa)
+      var searchIcon = document.querySelector(".search-icon");
+      var searchBar = document.getElementById("searchBar");
+      if (searchIcon && searchBar) {
+        searchIcon.addEventListener("click", function() {
+          if (searchBar.style.display === "" || searchBar.style.display === "none") {
+            searchBar.style.display = "block";
+          } else {
+            searchBar.style.display = "none";
+          }
+        });
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <!-- ENCABEZADO FIJO -->
+  <header>
+    <!-- Barra superior: hamburguesa, logo a la izquierda; lupa a la derecha -->
+    <div class="top-bar">
+      <!-- Menú hamburguesa -->
+      <div class="hamburger" title="Menú">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+
+      <!-- Logo Wikipedia (izquierda) -->
+      <div class="logo-container">
+        <a href="#">
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" 
+            alt="Wikipedia logo" 
+          />
+        </a>
+      </div>
+
+      <!-- Contenedor de la lupa (derecha) -->
+      <div class="search-container">
+        <svg class="search-icon" viewBox="0 0 24 24" title="Buscar">
+          <path d="M15.5 14h-.79l-.28-.27a6.518 6.518 0 
+                   001.48-5.34C15.34 5.02 13.28 3 
+                   10.75 3S6.16 5.02 5.09 8.39c-.55 
+                   2.07.06 4.22 1.48 5.34l-.27.28v.79
+                   l5 4.99 4.99-5zm-4.75 0C8.01 14 6 
+                   11.99 6 9.5S8.01 5 10.75 5s4.75 
+                   2.01 4.75 4.5-2.01 4.5-4.75 
+                   4.5z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Barra de búsqueda desplegable (oculta) -->
+    <div class="search-bar" id="searchBar">
+      <input type="text" placeholder="Buscar en Wikipedia..." />
+    </div>
+  </header>
+
+  <!-- MENÚ LATERAL -->
+  <nav>
+    <h2>Menú</h2>
+    <ul>
+      <li><a href="#">Portada</a></li>
+      <li><a href="#">Discusión</a></li>
+      <li><a href="#">Leer</a></li>
+      <li><a href="#">Ver historial</a></li>
+      <li><a href="#">Cambios recientes</a></li>
+      <li><a href="#">Páginas especiales</a></li>
+      <li><a href="#">Ayuda</a></li>
+    </ul>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div id="content">
+    <!-- TÍTULO y SUBTÍTULO -->
+    <h1 id="firstHeading">Ignacio waak</h1>
+    <div class="subtitle">Creador de Modas</div>
+    <!-- Línea debajo del subtítulo -->
+    <hr class="separator">
+
+    <!-- BARRA DE ACCIONES: "Traducir" a la izquierda, los otros 3 a la derecha -->
+    <div class="action-toolbar">
+      <!-- Izquierda -->
+      <div class="action-left">
+        <button class="action-btn" title="Traducir">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12c0 5 
+                     3.66 9.14 8.44 9.88-.12-.84-.22-2.14.04-3.06.24-.84 
+                     1.56-5.36 1.56-5.36s-.4-.8-.4-2c0-1.87 
+                     1.08-3.28 2.44-3.28 1.15 0 1.7.86 1.7 
+                     1.88 0 1.15-.73 2.86-1.11 4.46-.31 
+                     1.33.66 2.42 1.96 2.42 2.36 0 
+                     3.96-3.04 3.96-6.64 0-2.74-1.84-4.79-5.2-4.79-3.79 
+                     0-6.16 2.82-6.16 5.74 0 1.04.4 2.16.9 
+                     2.77.1.12.12.17.08.31-.03.1-.09.33-.12.42-.04.13-.13.18-.25.13-1.1-.45-1.79-1.85-1.79-2.98 
+                     0-2.41 2.04-5.28 6.1-5.28 3.24 
+                     0 5.38 2.35 5.38 4.89 0 3.29-1.83 
+                     5.74-4.53 5.74-1.43 0-2.49-1.18-2.15-2.62.41-1.71 
+                     1.21-3.55 1.21-4.78 0-1.1-.59-2.02-1.82-2.02-1.44 
+                     0-2.6 1.49-2.6 3.49 0 1.27.43 2.12.43 
+                     2.12l-1.73 7.34c-.3 1.27-.04 2.83-.02 
+                     3.14C3.87 21.53 2 17.97 2 
+                     14c0-5.52 4.48-10 10-10s10 
+                     4.48 10 10c0 5.35-4.17 9.73-9.48 
+                     9.98.38.33.73.69 1.05 1.08C19.11 
+                     24.31 22 19.63 22 14c0-5.52-4.48-10-10-10z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Derecha -->
+      <div class="action-right">
+        <button class="action-btn" title="Descargar">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 20h14v-2H5v2zM11 
+                     3v10H8l4 4 4-4h-3V3h-2z"/>
+          </svg>
+        </button>
+        <div class="action-separator"></div>
+
+        <button class="action-btn" title="Favoritos">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 
+                     21l-1.63-7.03L22 9.24l-7.19-.61L12 
+                     2 9.19 8.63 2 9.24l5.45 4.73L5.82 
+                     21z"/>
+          </svg>
+        </button>
+        <div class="action-separator"></div>
+
+        <button class="action-btn" title="Página protegida (candado)">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C9.79 2 8 
+                     3.79 8 6v4H6c-1.1 0-2 
+                     .9-2 2v8c0 1.1.9 2 2 
+                     2h12c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2h-2V6c0-2.21-1.79-4-4-4zm2 
+                     4v4H10V6c0-1.1.9-2 2-2s2 
+                     .9 2 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Otra línea luego de los íconos -->
+    <hr class="toolbar-separator">
+
+    <!-- INFOBOX con estilo de la captura -->
+    <table class="infobox">
+      <tbody>
+        <!-- Título (ej. Nombre) -->
+        <tr>
+          <th class="infobox-title" colspan="2">Ignacio Waak</th>
+        </tr>
+        <!-- Imagen con pie de foto -->
+        <tr>
+          <td colspan="2" class="infobox-image">
+            <img 
+              src="2.jpg" 
+              alt="Fotito mia"
+            />
+            <div class="infobox-caption">Foto fachera mia</div>
+          </td>
+        </tr>
+
+        <!-- Cargo: Presidente de la Nación Argentina -->
+        <tr>
+          <th class="infobox-header" colspan="2">Uncool kid</th>
+        </tr>
+        <tr>
+          <td class="infobox-label">Actualmente en el cargo</td>
+          <td class="infobox-data">Desde el 02 de junio del 2003</td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Gabinete</td>
+          <td class="infobox-data">Vieja padrastro y 4 hermanas </td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Mejor amigo<d>
+          <td class="infobox-data">Mi perro</td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Predecesor</td>
+          <td class="infobox-data">Futuro Hijo</td>
+        </tr>
+
+        <!-- Cargo: Presidente pro tempore del Mercosur -->
+        <tr>
+          <th class="infobox-header" colspan="2">Fututo profesional (Comercio Internacional)</th>
+        </tr>
+        <tr>
+          <td class="infobox-label">Período</td>
+          <td class="infobox-data">Nose la verdad pero pronto</td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Predecesor</td>
+          <td class="infobox-data">No tengo predecesor para esto :)</td>
+        </tr>
+
+        <!-- Cargo: Diputado de la Nación Argentina -->
+        <tr>
+          <th class="infobox-header" colspan="2">Estudiante bachiller en Administración Económica </th>
+        </tr>
+        <tr>
+          <td class="infobox-label">Período</td>
+          <td class="infobox-data">Último año </td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Sucesor</td>
+          <td class="infobox-data">Yo</td>
+        </tr>
+
+        <!-- Datos personales -->
+        <tr>
+          <th class="infobox-section" colspan="2">Datos personales</th>
+        </tr>
+        <tr>
+          <td class="infobox-label">Nombre de nacimiento</td>
+          <td class="infobox-data">Ignacio Waak</td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Apodo</td>
+          <td class="infobox-data">Tano</td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Nacimiento</td>
+          <td class="infobox-data">2 de junio del 2003<br>Entré Rios, Argentina</td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Residencia</td>
+          <td class="infobox-data">Mi casa</td>
+        </tr>
+        <tr>
+          <td class="infobox-label">Partido</td>
+          <td class="infobox-data">LLV (Anarcocapitalista)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><b>Ignacio waak</b> (Entre Rios, 2 de junio de 2003) es un <b>Aficionado</b>,a la <b>politica</b> y <b>Comercio internacional</b>. 
+    Es un <b>joven de 21 años</b>uncool kid <i>.</i>.<sup class="reference" id="cite_ref-15"><a href="#cite_note-15">[15]</a></sup><sup class="reference" id="cite_ref-16"><a href="#cite_note-16">[16]</a></sup></p>
+
+    <h2>Biografía</h2>
+    <p>Ignacio waak nació en Buenos Aires el 22 de octubre de 1970. 
+       <i>(Aquí se describiría su infancia, educación, familia, etc.)</i></p>
+
+    <h2>Trayectoria económica</h2>
+    <p>En este apartado se detallan sus teorías económicas, su participación en medios de comunicación 
+       como panelista económico, y sus posturas sobre política monetaria, la inflación y el rol del Estado.</p>
+
+    <h2>Carrera política</h2>
+    <p>Información sobre su candidatura a la presidencia de la República Argentina, su pertenencia a 
+       <i>La Libertad Avanza</i>, y la forma en que alcanzó la presidencia el 10 de diciembre de 2023.</p>
+
+    <h2>Docencia y publicaciones</h2>
+    <p>Listado de sus libros, artículos académicos y demás aportes a la literatura económica o política.</p>
+
+    <h2>Posiciones políticas y controversias</h2>
+    <p>Aquí se incluirían sus opiniones sobre política fiscal, política exterior, liberalismo, 
+       y cualquier controversia pública en la que se haya visto envuelto.</p>
+
+    <h2>Referencias</h2>
+    <ol class="references">
+      <li id="cite_note-15" class="reference">
+        <b>[15]</b> 
+        <span>Ejemplo de referencia original de Wikipedia (artículo periodístico o fuente académica).</span>
+      </li>
+      <li id="cite_note-16" class="reference">
+        <b>[16]</b> 
+        <span>Otra referencia que aparecía en el artículo original de Javier Milei.</span>
+      </li>
+    </ol>
+
+    <h2>Enlaces externos</h2>
+    <ul>
+      <li>
+        <a href="https://es.wikipedia.org/wiki/Javier_Milei" target="_blank">
+          Artículo original de Javier Milei en Wikipedia
+        </a>
+      </li>
+      <li>
+        <a href="https://www.wikimedia.org/" target="_blank">
+          Wikimedia Foundation
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="page-footer">
+    <p>
+      Obtenido de «
+      <a href="https://es.wikipedia.org/wiki/Javier_Milei" target="_blank">
+        https://es.wikipedia.org/wiki/Javier_Milei
+      </a>» (Wikipedia) bajo licencia 
+      <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.es" target="_blank">CC BY-SA 3.0</a>.
+    </p>
+    <p>Este texto es una obra derivada que sustituye “Javier Milei” por “Ignacio waak”.</p>
+    <p>Wikipedia® es una marca registrada de la 
+      <a href="https://wikimediafoundation.org/" target="_blank">Wikimedia Foundation, Inc.</a>
+    </p>
+  </footer>
+
+</body>
+</html>
